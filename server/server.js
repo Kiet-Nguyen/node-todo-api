@@ -14,7 +14,11 @@ const port = process.env.PORT;
 // Middleware
 app.use(bodyParser.json());
 
-// POST
+/**
+  * TODOS
+**/
+
+// POST /todos
 app.post('/todos', (req, res) => {
   const todo = new Todo({
     text: req.body.text
@@ -27,7 +31,7 @@ app.post('/todos', (req, res) => {
   });
 });
 
-// GET
+// GET /todos
 app.get('/todos', (req, res) => {
   Todo.find().then(todos => {
     res.send({todos});
@@ -36,7 +40,7 @@ app.get('/todos', (req, res) => {
   });
 });
 
-// GET TODO BY ID
+// GET /todos/:id
 app.get('/todos/:id', (req, res) => {
   const id = req.params.id;
   // Validate id
@@ -58,7 +62,7 @@ app.get('/todos/:id', (req, res) => {
     });
 });
 
-// DELETE
+// DELETE /todos/:id
 app.delete('/todos/:id', (req, res) => {
   const id = req.params.id;
   // Validate id
@@ -78,7 +82,7 @@ app.delete('/todos/:id', (req, res) => {
     });
 });
 
-// UPDATE TODO
+// PATCH /todos/:id
 app.patch('/todos/:id', (req, res) => {
   const id = req.params.id;
   const body = _.pick(req.body, ['text', 'completed']);
@@ -103,6 +107,28 @@ app.patch('/todos/:id', (req, res) => {
       res.send({todo});
     })
     .catch(err => res.status(400).send());
+});
+
+/**
+  * USERS
+**/
+
+// POST /users
+app.post('/users', (req, res) => {
+  const body = _.pick(req.body, ['email', 'password']);
+  const user = new User(body);
+
+  user.save()
+    .then(() => {
+      return user.generateAuthToken();
+      // res.send(user);
+    })
+    .then(token => {
+      res.header('x-auth', token).send(user);
+    })
+    .catch(err => {
+      res.status(400).send(err);
+    })
 });
 
 app.listen(port, () => {

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // Todo model
-const todoSchema = new mongoose.Schema({
+const TodoSchema = new mongoose.Schema({
   text: {
     type: String,
     required: true,
@@ -18,7 +18,7 @@ const todoSchema = new mongoose.Schema({
   }
 });
 
-const Todo = mongoose.model('Todo', todoSchema);
+const Todo = mongoose.model('Todo', TodoSchema);
 
 // const otherTodo = new Todo({
 //   text: 'Feed the cat',
