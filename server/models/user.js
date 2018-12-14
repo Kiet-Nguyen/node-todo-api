@@ -32,6 +32,10 @@ const UserSchema = new mongoose.Schema({
   }]
 });
 
+/**
+  * INSTANCE METHODS
+**/
+
 // Choose what to send back when a mongoose model is converted into a JSON value
 UserSchema.methods.toJSON = function() {
   const user = this;
@@ -49,6 +53,27 @@ UserSchema.methods.generateAuthToken = function() {
   user.tokens = user.tokens.concat([{access, token}]);
   return user.save().then(() => {
     return token;
+  });
+};
+
+/**
+  * MODEL METHODS
+**/
+
+UserSchema.statics.findByToken = function(token) {
+  const User = this;
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, 'abc123');
+  } catch (e) {
+    return Promise.reject();
+  }
+
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
   });
 };
 
